@@ -86,20 +86,20 @@ int	get(char **save, char **line, size_t size_read)
 int	get_next_line(int fd, char **line)
 {
 	ssize_t			size_read;
-	static char		*save;
+	static char		*save[1025];
 	char			buffer[BUFFER_SIZE];
 
 	if (fd < 0 || line == NULL || BUFFER_SIZE <= 0)
 		return (-1);
-	if (save != NULL && get(&save, line, BUFFER_SIZE))
+	if (save[fd] != NULL && get(&(save[fd]), line, BUFFER_SIZE))
 		return (1);
 	size_read = read(fd, buffer, BUFFER_SIZE);
 	while (size_read > 0)
 	{
-		save = save_content(save, buffer, size_read);
-		if (save == NULL)
+		save[fd] = save_content(save[fd], buffer, size_read);
+		if (save[fd] == NULL)
 			return (-1);
-		if (save != NULL && get(&save, line, size_read))
+		if (save[fd] != NULL && get(&(save[fd]), line, size_read))
 			return (1);
 		size_read = read(fd, buffer, BUFFER_SIZE);
 	}
