@@ -16,12 +16,12 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-# if !defined(BUFFER_SIZE)
-#  define BUFFER_SIZE 1024
-# endif
+int		get_next_line(int fd, char **line);
 
-int	get_next_line(int fd, char **line);
+size_t	ft_strlen(char *str);
 
-int	hasbreak(char *buffer, ssize_t size_read);
+void	concat_save(char *save, char *old, char *new, ssize_t size_read);
+
+size_t	find_break(char *str);
 
 #endif
