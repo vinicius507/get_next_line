@@ -16,6 +16,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 
+# define FD_SIZE 4096
+
 typedef enum e_status
 {
 	ERROR = -1,
