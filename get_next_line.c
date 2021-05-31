@@ -106,7 +106,7 @@ static void	reset_content(char **save)
 		s_save++;
 	offset = 0;
 	while (offset < m_size)
-		temp[offset] = *++s_save;
+		temp[offset++] = *++s_save;
 	temp[offset] = '\0';
 	kill_save(save);
 	*save = temp;
