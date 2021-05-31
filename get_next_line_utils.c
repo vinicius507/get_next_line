@@ -12,34 +12,35 @@
 
 #include "get_next_line.h"
 
-size_t	get_line_len(char *str)
+void	kill_save(char **save)
 {
-	size_t	len;
-
-	len = 0;
-	while (str[len] && str[len] != '\n')
-		len++;
-	return (len);
+	if (*save != NULL)
+	{
+		free(*save);
+		*save = NULL;
+	}
 }
 
 size_t	ft_strlen(const char *str)
 {
-	size_t	len;
+	const char	*end;
 
-	len = 0;
-	while (str[len])
-		len++;
-	return (len);
+	end = str;
+	while (*end)
+		end++;
+	return (end - str);
 }
 
-void	concat_save(char *save, char *old, char *new, ssize_t limit)
+size_t	get_ssize(const char *save)
 {
-	if (old != NULL)
-	{
-		while (*old)
-			*save++ = *old++;
-	}
-	while (limit-- && *new)
-		*save++ = *new++;
-	*save = '\0';
+	size_t	size;
+
+	while (*save && *save != '\n')
+		save++;
+	if (*save)
+		save += 1;
+	size = 0;
+	while (save[size])
+		size++;
+	return (size);
 }

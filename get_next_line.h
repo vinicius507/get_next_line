@@ -16,12 +16,20 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-int		get_next_line(int fd, char **line);
+typedef enum e_status
+{
+	ERROR = -1,
+	END_OF_FILE,
+	NEWLINE,
+	NO_NEWLINE,
+}	t_status;
 
-size_t	get_line_len(char *str);
+int		get_next_line(int fd, char **line);
 
 size_t	ft_strlen(const char *str);
 
-void	concat_save(char *save, char *old, char *new, ssize_t limit);
+void	kill_save(char **save);
+
+size_t	get_ssize(const char *save);
 
 #endif

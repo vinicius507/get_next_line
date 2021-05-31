@@ -10,106 +10,127 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// TODO: remind to delete stdio
-#include <stdio.h>
 #include "get_next_line.h"
 
-static int	check_save(char *save)
+static t_status	check_buf(const char *buf, ssize_t buf_size)
 {
-	size_t	len;
+	size_t	counter;
 
-	if (!save)
-		return (0);
-	len = ft_strlen(save);
-	if (!len)
-		return (1);
-	while (*save)
+	if (buf_size == 0)
+		return (END_OF_FILE);
+	else if (buf_size < 0)
+		return (ERROR);
+	counter = 0;
+	while (counter < (size_t)buf_size)
 	{
-		if (*save == '\n')
-			return (1);
-		save++;
+		if (buf[counter] == '\n')
+			return (NEWLINE);
+		counter++;
 	}
-	return (0);
+	return (NO_NEWLINE);
 }
 
-static int	get_line(char *save, char **line)
+static void	save_content(char *buf, ssize_t buf_size, char **save)
 {
-	size_t	len;
-	size_t	offset;
-
-	if (!check_save(save))
-		return (0);
-	len = get_line_len(save);
-	*line = malloc(len + 1);
-	if (*line == NULL)
-		return (-1);
-	offset = 0;
-	while (offset < len)
-	{
-		(*line)[offset] = save[offset];
-		offset++;
-	}
-	(*line)[offset] = '\0';
-	return (1);
-}
-
-static int	save_content(char **save, char *content, ssize_t size_read)
-{
+	size_t	i;
+	size_t	j;
 	char	*temp;
-	ssize_t	m_size;
+	size_t	m_size;
 
-	m_size = size_read + 1;
+	m_size = buf_size;
 	if (*save != NULL)
 		m_size += ft_strlen(*save);
-	temp = malloc(m_size);
+	temp = malloc(m_size + 1);
 	if (temp == NULL)
-		return (0);
-	concat_save(temp, *save, content, size_read);
+	{
+		kill_save(save);
+		return ;
+	}
+	i = 0;
+	j = 0;
+	while (*save != NULL && (*save)[j])
+		temp[i++] = (*save)[j++];
+	j = 0;
+	while (j < (size_t)buf_size)
+		temp[i++] = buf[j++];
+	temp[i] = '\0';
 	if (*save != NULL)
 		free(*save);
 	*save = temp;
-	return (1);
+}
+
+static void	get_line(char **save, char **line, t_status status)
+{
+	size_t	size;
+	size_t	offset;
+
+	if (status == END_OF_FILE && *save == NULL)
+	{
+		kill_save(save);
+		*line = malloc(1);
+		if (*line == NULL)
+			return ;
+		(*line)[0] = '\0';
+		return ;
+	}
+	size = 0;
+	while ((*save)[size] && (*save)[size] != '\n')
+		size++;
+	*line = malloc(size + 1);
+	if (*line == NULL)
+		return ;
+	offset = -1;
+	while (++offset < size)
+		(*line)[offset] = (*save)[offset];
+	(*line)[offset] = '\0';
 }
 
 static void	reset_content(char **save)
 {
 	char	*temp;
+	size_t	m_size;
 	size_t	offset;
-	size_t	save_size;
+	char	*s_save;
 
-	offset = get_line_len(*save);
-	save_size = ft_strlen(*save);
-	if (offset == save_size)
+	if (*save == NULL)
 		return ;
-	temp = malloc(save_size - offset);
+	m_size = get_ssize(*save);
+	temp = malloc(m_size + 1);
 	if (temp == NULL)
+	{
+		kill_save(save);
 		return ;
-	concat_save(temp, NULL, (*save) + offset + 1, save_size - offset);
-	if (*save != NULL)
-		free(*save);
+	}
+	s_save = *save;
+	while (*s_save && *s_save != '\n')
+		s_save++;
+	offset = 0;
+	while (offset < m_size)
+		temp[offset] = *++s_save;
+	temp[offset] = '\0';
+	kill_save(save);
 	*save = temp;
 }
 
 int	get_next_line(int fd, char **line)
 {
-	int			hasline;
 	ssize_t		size_read;
-	static char	*save[1024];
-	char		buffer[BUFFER_SIZE];
+	static char	*save;
+	char		buf[BUFFER_SIZE];
+	t_status	status;
 
-	hasline = 0;
-	while (!hasline)
+	status = NO_NEWLINE;
+	while (status == NO_NEWLINE)
 	{
-		hasline = get_line(save[fd], line);
-		size_read = read(fd, buffer, BUFFER_SIZE);
-		if (size_read == -1 || hasline == -1 || !save_content(&(save[fd]),
-				buffer, size_read))
-			return (-1);
-		if (hasline == 1)
-		{
-			reset_content(&(save[fd]));
-			return (!!size_read);
-		}
+		size_read = read(fd, buf, BUFFER_SIZE);
+		status = check_buf(buf, size_read);
+		if (status == ERROR)
+			return (ERROR);
+		save_content(buf, size_read, &save);
+		if (save == NULL)
+			return (ERROR);
 	}
-	return (0);
+	get_line(&save, line, status);
+	reset_content(&save);
+	return (status);
 }
