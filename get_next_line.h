@@ -18,10 +18,10 @@
 
 int		get_next_line(int fd, char **line);
 
-size_t	ft_strlen(char *str);
+size_t	get_line_len(char *str);
 
-void	concat_save(char *save, char *old, char *new, ssize_t size_read);
+size_t	ft_strlen(const char *str);
 
-size_t	find_break(char *str);
+void	concat_save(char *save, char *old, char *new, ssize_t limit);
 
 #endif
