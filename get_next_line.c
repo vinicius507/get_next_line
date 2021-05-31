@@ -12,20 +12,15 @@
 
 #include "get_next_line.h"
 
-static t_status	check_buf(const char *buf, ssize_t buf_size)
+static t_status	check_save(const char *save)
 {
-	size_t	counter;
-
-	if (buf_size == 0)
-		return (END_OF_FILE);
-	else if (buf_size < 0)
-		return (ERROR);
-	counter = 0;
-	while (counter < (size_t)buf_size)
+	if (save == NULL)
+		return (NO_NEWLINE);
+	while (*save)
 	{
-		if (buf[counter] == '\n')
+		if (*save == '\n')
 			return (NEWLINE);
-		counter++;
+		save++;
 	}
 	return (NO_NEWLINE);
 }
@@ -119,18 +114,21 @@ int	get_next_line(int fd, char **line)
 	char		buf[BUFFER_SIZE];
 	t_status	status;
 
-	// FIX: make check on save before buffer
-	// NOTE: check on save?
-	status = NO_NEWLINE;
+	status = check_save(save);
 	while (status == NO_NEWLINE)
 	{
 		size_read = read(fd, buf, BUFFER_SIZE);
-		status = check_buf(buf, size_read);
-		if (status == ERROR)
+		if (size_read == -1)
+		{
+			kill_save(&save);
 			return (ERROR);
+		}
+		if (size_read == 0)
+			break ;
 		save_content(buf, size_read, &save);
 		if (save == NULL)
 			return (ERROR);
+		status = check_save(save);
 	}
 	get_line(&save, line, status);
 	reset_content(&save);
