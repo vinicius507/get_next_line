@@ -115,10 +115,12 @@ static void	reset_content(char **save)
 int	get_next_line(int fd, char **line)
 {
 	ssize_t		size_read;
-	static char	*save[FD_SIZE];
+	static char	*save;
 	char		buf[BUFFER_SIZE];
 	t_status	status;
 
+	// FIX: make check on save before buffer
+	// NOTE: check on save?
 	status = NO_NEWLINE;
 	while (status == NO_NEWLINE)
 	{
@@ -126,11 +128,11 @@ int	get_next_line(int fd, char **line)
 		status = check_buf(buf, size_read);
 		if (status == ERROR)
 			return (ERROR);
-		save_content(buf, size_read, &(save[fd]));
-		if ((save[fd]) == NULL)
+		save_content(buf, size_read, &save);
+		if (save == NULL)
 			return (ERROR);
 	}
-	get_line(&(save[fd]), line, status);
-	reset_content(&(save[fd]));
+	get_line(&save, line, status);
+	reset_content(&save);
 	return (status);
 }
