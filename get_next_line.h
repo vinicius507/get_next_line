@@ -23,15 +23,18 @@ typedef enum e_status
 	ERROR = -1,
 	END_OF_FILE,
 	NEWLINE,
-	NO_NEWLINE,
 }	t_status;
 
 int		get_next_line(int fd, char **line);
 
 size_t	ft_strlen(const char *str);
 
-void	kill_save(char **save);
+char	*ft_strdup(const char *str);
 
-size_t	get_ssize(const char *save);
+char	*ft_strjoin(const char *s1, const char *s2);
+
+char	*ft_strchr(const char *s, int c);
+
+char	*linedup(char *save, size_t end);
 
 #endif

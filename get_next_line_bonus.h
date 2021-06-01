@@ -16,9 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-# ifndef OPEN_MAX
-#  define OPEN_MAX 1024
-# endif
+# define OPEN_MAX 1024
 
 typedef enum e_status
 {
