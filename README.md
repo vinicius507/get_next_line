@@ -10,6 +10,8 @@
 </p>
 
 # Get Next Line
+[![norminette](https://github.com/vinicius507/get_next_line/actions/workflows/norminette.yml/badge.svg)](https://github.com/vinicius507/get_next_line/actions/workflows/norminette.yml)
+
 This repository contains my submission to the project _Get Next Line_ for 42 School.
 
 ## Introduction
