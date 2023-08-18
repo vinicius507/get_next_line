@@ -40,13 +40,14 @@
       norminette-check-mandatory = norminetteCheck "mandatory" ./mandatory;
       norminette-check-bonus = norminetteCheck "bonus" ./bonus;
     });
-    devShells = forEachSystem ({pkgs}: {
-      default = pkgs.mkShell {
+    devShells = forEachSystem ({pkgs}: let
+      mkShell = pkgs.mkShell.override {inherit (pkgs.llvmPackages_12) stdenv;};
+    in {
+      default = mkShell {
         packages = with pkgs; [
           bear
           clang-tools_12
           gnumake
-          llvmPackages_12.libcxxClang
           norminette
           valgrind
         ];
