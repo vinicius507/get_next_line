@@ -1,26 +1,22 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs";
-    ft-nix = {
-      url = "github:vinicius507/42-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
   outputs = {
     self,
     nixpkgs,
-    ft-nix,
   }: let
     allSystems = [
       "x86_64-linux"
       "aarch64-linux"
     ];
+
     forEachSystem = f:
       nixpkgs.lib.genAttrs allSystems (system:
         f {
           pkgs = import nixpkgs {
             inherit system;
-            overlays = [ft-nix.overlays.norminette];
+            overlays = builtins.attrValues self.overlays;
           };
         });
   in {
@@ -40,10 +36,13 @@
       norminette-check-mandatory = norminetteCheck "mandatory" ./mandatory;
       norminette-check-bonus = norminetteCheck "bonus" ./bonus;
     });
-    devShells = forEachSystem ({pkgs}: let
-      mkShell = pkgs.mkShell.override {inherit (pkgs.llvmPackages_12) stdenv;};
-    in {
-      default = mkShell {
+    overlays = {
+      devshell = final: prev: {
+        mkShell = prev.mkShell.override {inherit (final.llvmPackages_12) stdenv;};
+      };
+    };
+    devShells = forEachSystem ({pkgs}: {
+      default = pkgs.mkShell {
         packages = with pkgs; [
           bear
           clang-tools_12

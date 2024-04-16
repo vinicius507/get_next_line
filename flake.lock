@@ -1,25 +1,5 @@
 {
   "nodes": {
-    "ft-nix": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1692307336,
-        "narHash": "sha256-Dn/Wgw/YXpGxuCVx6bSGdSgNHJ8m0Layhlx1agSIenM=",
-        "owner": "vinicius507",
-        "repo": "42-nix",
-        "rev": "0052ecb92977a01f765de3a962597b1300c3c440",
-        "type": "github"
-      },
-      "original": {
-        "owner": "vinicius507",
-        "repo": "42-nix",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1691654369,
@@ -35,7 +15,6 @@
     },
     "root": {
       "inputs": {
-        "ft-nix": "ft-nix",
         "nixpkgs": "nixpkgs"
       }
     }
